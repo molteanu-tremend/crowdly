@@ -1,0 +1,475 @@
+{% extends "crowdly/base_site.html" %}
+{% load static from staticfiles %}
+
+{% block title %}My Devices{% endblock %}
+
+{% block pageheader %}
+
+ <link rel="stylesheet" type="text/css" href="{% static 'cloudmatix/css/noc.css' %}">
+
+  <div class="row">
+    <div class="col-md-12 text-xs-center text-md-left text-nowrap">
+        <h1 class="pull-md-left"><i class="fa fa-cogs" aria-hidden="true"></i>Device: {{ device.uuid }}
+            {% if device.is_online %}
+                <span id="label_is_online" style="margin-left:10px" class="label label-success">Online</span>
+            {% else %}
+                <span id="label_is_online" style="margin-left:10px" class="label label-danger">Offline</span>
+            {% endif %}
+        </h1>
+
+    </div>
+  </div>
+{% endblock %}
+
+
+{% block content %}
+
+    <div class="right_col" role="main">
+
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            <div class="x_panel">
+
+                <div class="x_title">
+                  <h2>Details</h2>
+                  <div class="clearfix"></div>
+                </div>
+
+                <div class="x_content">
+
+                    <div style="margin-bottom: 20px; font-size: 1.5em;" class="col-md-12 col-sm-12 col-xs-12">
+                        <div class="col-md-6" style="font-weight: bold;">
+                            Name
+                        </div>
+                        <div class="col-md-6">
+                            {{ device.name }}
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 20px; font-size: 1.5em;" class="col-md-12 col-sm-12 col-xs-12">
+                        <div class="col-md-6" style="font-weight: bold;">
+                            UUID
+                        </div>
+                        <div class="col-md-6">
+                            {{ device.uuid }}
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 20px; font-size: 1.5em;" class="col-md-12 col-sm-12 col-xs-12">
+                        <div class="col-md-6" style="font-weight: bold;">
+                            Location
+                        </div>
+                        <div class="col-md-6">
+                            {{ device.location }}
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 20px; font-size: 1.5em;" class="col-md-12 col-sm-12 col-xs-12">
+                        <div class="col-md-6" style="font-weight: bold;">
+                            Last Seen
+                        </div>
+                        <div class="col-md-6">
+                            {{ device.last_seen | timesince }} ago
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            <div class="x_panel">
+
+                <div class="x_title">
+                  <h2>People count history</h2>
+                  <div class="clearfix"></div>
+                </div>
+
+                 <div class="x_content2">
+                    <div id="graph_area_dev" style="width:100%; height:300px;"></div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+
+    {% if device.latitude %}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel">
+                <div class="panel-title font-size-20">Map</div>
+                <div class="panel-body">
+                    <div class="widget-maps" id="widget-maps-example" style="height:300px"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+<!--<script type="application/javascript">-->
+
+    <!--var pollingStarted = false;-->
+
+    <!--function startPolling() {-->
+        <!--if (!pollingStarted) {-->
+            <!--pollingStarted = true;-->
+            <!--console.log("Start polling");-->
+
+            <!--setInterval(function () {-->
+                <!--var product_name = '{{ device.product.name }}';-->
+
+                <!--jQuery.get('/iot-device-state-data-json/{{ device.uuid }}/', function (data) {-->
+                    <!--setData(data.state_data, data.is_online);-->
+                <!--});-->
+            <!--}, 1000);-->
+
+        <!--}-->
+    <!--}-->
+
+    <!--function setInitialTemperature(initial_temp) {-->
+        <!--startPolling();-->
+    <!--}-->
+
+    <!--function setData(data, is_online) {-->
+
+        <!--if (data.hasOwnProperty('temperature')) {-->
+
+            <!--var that = $('#attr_temperature');-->
+            <!--$('#attr_temperature').html(data['temperature']);-->
+
+            <!--// Nu merge !-->
+<!--{#            $('#attr_temperature').animate({fontSize: 28}, 1500, function(){#}-->
+<!--{##}-->
+<!--{##}-->
+<!--{#                $('#attr_temperature').animate({fontSize: 24}, 1500);#}-->
+<!--{#            });#}-->
+        <!--}-->
+
+        <!--if (data.hasOwnProperty('light')) {-->
+            <!--$('#attr_light').html(data['light']);-->
+        <!--}-->
+
+        <!--if (data.hasOwnProperty('led')) {-->
+            <!--$('#attr_led').html( data['led'].toUpperCase() );-->
+        <!--}-->
+
+        <!--if (is_online) {-->
+            <!--$('#label_is_online').html('Online');-->
+            <!--$('#label_is_online').removeClass('label-danger');-->
+            <!--$('#label_is_online').addClass('label-success');-->
+
+            <!--$('.cx-graph-offline').each(function(){-->
+               <!--$(this).hide();-->
+            <!--});-->
+
+        <!--} else {-->
+            <!--$('#label_is_online').html('Offline');-->
+            <!--$('#label_is_online').removeClass('label-success');-->
+            <!--$('#label_is_online').addClass('label-danger');-->
+
+
+            <!--$('.cx-graph-offline').each(function(){-->
+               <!--$(this).show();-->
+            <!--});-->
+
+        <!--}-->
+
+    <!--}-->
+
+    <!--$(document).ready(function(){-->
+        <!--var stateData = "{{ state_data_view.temperature }}";-->
+        <!--setInitialTemperature(parseFloat(stateData));-->
+    <!--});-->
+
+    <!--// END POLLING-->
+
+    <!--// Charts-->
+    <!--var tempChart;-->
+    <!--var lightChart;-->
+    <!--$(document).ready(function () {-->
+        <!--var data = [];-->
+
+        <!--tempChart = new Morris.Area({-->
+            <!--element: 'morrisjs-area-temp',-->
+            <!--data: data,-->
+            <!--xkey: 'created',-->
+            <!--ykeys: ['temperature'],-->
+            <!--labels: ['Temperature'],-->
+            <!--hideHover: 'auto',-->
+            <!--lineColors: ['#FF3300'],-->
+            <!--fillOpacity: 0.1,-->
+            <!--behaveLikeLine: true,-->
+            <!--lineWidth: 1,-->
+            <!--pointSize: 4,-->
+            <!--gridLineColor: '#cfcfcf',-->
+            <!--resize: true-->
+        <!--});-->
+
+
+        <!--lightChart = new Morris.Area({-->
+            <!--element: 'morrisjs-area-light',-->
+            <!--data: data,-->
+            <!--xkey: 'created',-->
+            <!--ykeys: ['light'],-->
+            <!--labels: ['Light'],-->
+            <!--hideHover: 'auto',-->
+            <!--lineColors: ['#199cef'],-->
+            <!--fillOpacity: 0.1,-->
+            <!--behaveLikeLine: true,-->
+            <!--lineWidth: 1,-->
+            <!--pointSize: 4,-->
+            <!--gridLineColor: '#cfcfcf',-->
+            <!--resize: true-->
+        <!--});-->
+
+        <!--setInterval(function(){-->
+            <!--updateAreaChart(tempChart, lightChart);-->
+        <!--}, 1000);-->
+
+    <!--});-->
+
+    <!--function updateAreaChart(areaChart, lightChart) {-->
+        <!--getEventHistory(areaChart, lightChart, limit);-->
+    <!--}-->
+
+    <!--var limit = 50;-->
+
+    <!--function getEventHistory(tempChart, lightChart, limit) {-->
+        <!--jQuery.get('/api/v1/statehistory/?device={{ device.uuid }}&limit=' + limit, function (data) {-->
+            <!--// TODO: Update lastId-->
+            <!--var tempChartData = [];-->
+            <!--var lightChartData = [];-->
+            <!--for (var i=0; i < data['results'].length; i++) {-->
+
+<!--{#                 console.log(data['results']);#}-->
+                <!--var item = data['results'][i];-->
+                <!--var itemState = item['current_state'];-->
+
+                <!--if (itemState.hasOwnProperty('temperature')) {-->
+                    <!--var chartItemTemp = {-->
+                        <!--"created": item['created'],-->
+                        <!--"temperature": itemState['temperature']-->
+                    <!--};-->
+                    <!--tempChartData.push(chartItemTemp);-->
+                <!--}-->
+
+                <!--if (itemState.hasOwnProperty('light')) {-->
+                    <!--var chartItemLight = {-->
+                        <!--"created": item['created'],-->
+                        <!--"light": itemState['light']-->
+                    <!--};-->
+                    <!--lightChartData.push(chartItemLight);-->
+                <!--}-->
+            <!--}-->
+
+            <!--tempChart.setData(tempChartData);-->
+            <!--lightChart.setData(lightChartData);-->
+        <!--});-->
+    <!--}-->
+
+
+    <!--// Toggle led-->
+    <!--$(document).ready(function(){-->
+       <!--$('#led_toggle').change(function() {-->
+
+           <!--var led = "off";-->
+           <!--if ($(this).is(":checked")) {-->
+               <!--led = "on";-->
+           <!--}-->
+
+           <!--jQuery.post('/api/v1/manage/{{ device.uuid }}/setstateattr/', {-->
+               <!--"led": led-->
+           <!--}, function(data) {-->
+<!--{#               console.log(data);#}-->
+           <!--});-->
+
+       <!--});-->
+
+
+       <!--// Send CSRF on AJAX requests-->
+    <!--$.ajaxSetup({-->
+     <!--beforeSend: function(xhr, settings) {-->
+         <!--function getCookie(name) {-->
+             <!--var cookieValue = null;-->
+             <!--if (document.cookie && document.cookie != '') {-->
+                 <!--var cookies = document.cookie.split(';');-->
+                 <!--for (var i = 0; i < cookies.length; i++) {-->
+                     <!--var cookie = jQuery.trim(cookies[i]);-->
+                     <!--// Does this cookie string begin with the name we want?-->
+                     <!--if (cookie.substring(0, name.length + 1) == (name + '=')) {-->
+                         <!--cookieValue = decodeURIComponent(cookie.substring(name.length + 1));-->
+                         <!--break;-->
+                     <!--}-->
+                 <!--}-->
+             <!--}-->
+             <!--return cookieValue;-->
+         <!--}-->
+         <!--if (!(/^http:.*/.test(settings.url) || /^https:.*/.test(settings.url))) {-->
+             <!--// Only send the token to relative URLs i.e. locally.-->
+             <!--xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));-->
+         <!--}-->
+     <!--}-->
+    <!--});-->
+
+
+
+    <!--});-->
+
+
+
+
+<!--</script>-->
+
+<!--<script>-->
+    <!--pxInit.push(function () {-->
+<!--{#        console.log("pxinit");#}-->
+        <!--// Google Maps docs - https://developers.google.com/maps/documentation/javascript/examples/map-simple-->
+        <!--var map = new google.maps.Map(document.getElementById('widget-maps-example'), {-->
+            <!--center: new google.maps.LatLng({{ device.latitude|default_if_none:0.0 }}, {{ device.longitude|default_if_none:0.0 }}),-->
+            <!--mapTypeId: google.maps.MapTypeId.ROADMAP,-->
+            <!--scrollwheel: false,-->
+            <!--panControl: false,-->
+            <!--zoomControl: true,-->
+            <!--scaleControl: true,-->
+            <!--draggable : false,-->
+            <!--mapTypeControl: false,-->
+            <!--zoom: 8,-->
+            <!--zoomControlOptions: {-->
+                <!--style: google.maps.ZoomControlStyle.SMALL,-->
+                <!--position: google.maps.ControlPosition.RIGHT_TOP-->
+            <!--}-->
+        <!--});-->
+
+        <!--var bounds = new google.maps.LatLngBounds();-->
+
+
+        <!--var pinColor = "ffcc00" ;-->
+
+        <!--var pinImage = new google.maps.MarkerImage("//chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|" + pinColor,-->
+                                        <!--new google.maps.Size(21, 34),-->
+                                        <!--new google.maps.Point(0,0),-->
+                                        <!--new google.maps.Point(10, 34));-->
+
+        <!--var marker = new google.maps.Marker({-->
+            <!--position: new google.maps.LatLng({{ device.latitude |default_if_none:30.0 }}, {{ device.longitude |default_if_none:0.0 }}),-->
+            <!--draggable:false,-->
+            <!--title: "{{ device.uuid }}",-->
+            <!--icon: pinImage,-->
+            <!--map: map-->
+        <!--});-->
+
+        <!--var infowindow = new google.maps.InfoWindow({-->
+                <!--content: "{{ device.name }}"-->
+
+        <!--});-->
+
+        <!--google.maps.event.addListener(marker, 'click', function() {-->
+                <!--infowindow.open(map,marker);-->
+        <!--});-->
+<!--{#        console.log("pxinit ... 2");#}-->
+
+    <!--});-->
+<!--</script>-->
+
+
+{% endblock %}
+
+
+
+{% block javascripts %}
+
+
+<script>
+    $(document).ready(function() {
+       console.log("READY");
+
+       var data = [];
+
+       var lightChart;
+       lightChart = new Morris.Area({
+            element: 'graph_area_dev',
+            data: data,
+            xkey: 'created',
+            ykeys: ['ppc'],
+            labels: ['People Count'],
+            hideHover: 'auto',
+            lineColors: ['#2D4154'],
+            fillOpacity: 0.1,
+            behaveLikeLine: true,
+            lineWidth: 1,
+            pointSize: 4,
+            gridLineColor: '#cfcfcf',
+            resize: true
+        });
+
+       setInterval(function(){
+            updateAreaChart(lightChart);
+        }, 1000);
+
+
+        function updateAreaChart(lightChart) {
+            getEventHistory(lightChart, limit);
+        }
+
+        var limit = 50;
+
+    function getEventHistory(lightChart, limit) {
+        jQuery.get('/api/statehistory/?device={{ device.uuid }}&limit=' + limit, function (data) {
+            // TODO: Update lastId
+            var tempChartData = [];
+            var lightChartData = [];
+            for (var i=0; i < data['results'].length; i++) {
+                console.log(data['results']);
+                var item = data['results'][i];
+
+                if (item.hasOwnProperty('new_pp_count')) {
+                    var chartItemLight = {
+                        "created": item['created'],
+                        "ppc": item['new_pp_count']
+                    };
+                    lightChartData.push(chartItemLight);
+                }
+            }
+
+            lightChart.setData(lightChartData);
+        });
+    }
+
+    $.ajaxSetup({
+     beforeSend: function(xhr, settings) {
+         function getCookie(name) {
+             var cookieValue = null;
+             if (document.cookie && document.cookie != '') {
+                 var cookies = document.cookie.split(';');
+                 for (var i = 0; i < cookies.length; i++) {
+                     var cookie = jQuery.trim(cookies[i]);
+                     // Does this cookie string begin with the name we want?
+                     if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                         cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                         break;
+                     }
+                 }
+             }
+             return cookieValue;
+         }
+         if (!(/^http:.*/.test(settings.url) || /^https:.*/.test(settings.url))) {
+             // Only send the token to relative URLs i.e. locally.
+             xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+         }
+     }
+    });
+
+
+    });
+</script>
+
+
+  {{ block.super }}
+  <!-- morris.js -->
+  <script src="/static/vendors/raphael/raphael.min.js"></script>
+  <script src="/static/vendors/morris.js/morris.min.js"></script>
+{% endblock javascripts %}

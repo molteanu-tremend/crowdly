@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 
-from models import Device, DeviceHistory, Location
+from models import Device, DeviceHistory, Location, LocationHistory
 
 
 @admin.register(Device)
@@ -54,6 +54,11 @@ class LocationAdmin(admin.ModelAdmin):
 
 
 @admin.register(DeviceHistory)
-class EventAdmin(admin.ModelAdmin):
-    list_display = ('id', 'device', 'created', 'modified', 'description')
+class DeviceHistory(admin.ModelAdmin):
+    list_display = ('id', 'device', 'new_pp_count', 'created', 'modified', 'description')
+    readonly_fields = ('id', 'created', 'modified', )
+
+@admin.register(LocationHistory)
+class LocationHistory(admin.ModelAdmin):
+    list_display = ('id', 'location', 'pp_count', 'created', 'modified', 'description')
     readonly_fields = ('id', 'created', 'modified', )

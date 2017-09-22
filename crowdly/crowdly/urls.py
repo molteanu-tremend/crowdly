@@ -20,18 +20,20 @@ from rest_framework.authtoken.views import ObtainAuthToken
 from django.conf.urls.static import static
 from django.conf import settings
 
+from api import DeviceViewSet, LocationViewSet, ManageLocationViewSet, DeviceHistoryViewSet, LocationHistoryViewSet, \
+    ChangeDeviceViewSet, DeviceStateHistoryViewSet
 
-
-from api import DeviceViewSet, LocationViewSet, ManageLocationViewSet, DeviceHistoryViewSet, LocationHistoryViewSet
-
-from views import HomeView
+from views import HomeView, DeviceList, DeviceDetail
 
 router = routers.DefaultRouter()
 router.register(r'devices', DeviceViewSet, "Device")
+router.register(r'setpp', ChangeDeviceViewSet, "ChangeDevice")
 router.register(r'locations', LocationViewSet, "Location")
 router.register(r'manage', ManageLocationViewSet, base_name='manage')
 router.register(r'devicehistory', DeviceHistoryViewSet, 'DeviceHistory')
 router.register(r'locationhistory', LocationHistoryViewSet, 'LocationHistory')
+router.register(r'statehistory', DeviceStateHistoryViewSet, base_name='statehistory')
+
 
 
 urlpatterns = [
@@ -48,6 +50,9 @@ urlpatterns = [
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 
     url(r'^auth-token/', ObtainAuthToken.as_view()),
+
+    url(r'^device/$', DeviceList.as_view(), name='device-list-view'),
+    url(r'^device/(?P<slug>[\w-]+)/$', DeviceDetail.as_view(), name='device-detail-view'),
 
 ]
 

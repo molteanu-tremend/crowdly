@@ -95,6 +95,16 @@ class Device(ModelDiffMixin, models.Model):
             # logger.debug("------- Send save notifications")
             self._send_save_notifications(dirty_fields)
 
+        if 'last_people_count' in dirty_fields:
+            logger.error("DIRTY: " + str(dirty_fields))
+            logger.error("PP: " + str(self.last_people_count))
+
+            pp_diff = self.get_field_diff('last_people_count')
+            old_pp = pp_diff[0]
+            new_pp = int(pp_diff[1])
+
+            self._save_event(old_pp, new_pp)
+
         if not self.pk:
 
             try:
@@ -109,6 +119,33 @@ class Device(ModelDiffMixin, models.Model):
                 return
         else:
             super(Device, self).save(*args, **kwargs)
+
+    def _save_event(self, old_pp, new_pp):
+
+        devHist = DeviceHistory()
+        devHist.device = self
+        devHist.old_pp_count = old_pp
+        devHist.new_pp_count = new_pp
+        devHist.save()
+
+        if self.location:
+            locHist = LocationHistory()
+
+            sumc = 0
+            for dev in self.location.device_set.all():
+                if dev.uuid != self.uuid:
+                    sumc += dev.last_people_count
+            sumc += new_pp
+
+            locHist.location = self.location
+            locHist.pp_count = sumc
+            locHist.save()
+
+
+    def __unicode__(self):
+        return str(self.name)
+
+
 
     def _send_save_notifications(self, dirty_fields):
 

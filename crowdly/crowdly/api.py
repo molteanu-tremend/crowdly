@@ -1,6 +1,11 @@
+import datetime
+
+import pytz
 from django.db.models import Count
+from django.http import Http404
 from rest_framework import viewsets, mixins, status
-from rest_framework.decorators import list_route
+from rest_framework.decorators import list_route, detail_route
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import IsAuthenticated
@@ -147,6 +152,47 @@ class ManageLocationViewSet(mixins.ListModelMixin,
             )
 
 
+class ChangeDeviceViewSet(mixins.ListModelMixin,
+                          mixins.RetrieveModelMixin,
+                          viewsets.GenericViewSet):
+
+    serializer_class = DeviceSerializer
+    lookup_field = 'uuid'
+    lookup_value_regex = '[0-9a-zA-Z]{20,24}'
+
+    def get_queryset(self):
+        return Device.objects.all()
+
+    @detail_route(methods=['post'])
+    def upd(self, request, uuid=None, **kwargs):
+
+        try:
+            device = self.get_object()
+        except PermissionDenied:
+            raise PermissionDenied
+        except:
+            raise Http404
+
+        pp_count = request.POST['pp_count']
+        device.last_people_count = pp_count
+        device.last_seen = datetime.datetime.now(pytz.utc)
+        device.is_online = True
+        device.save()
+
+        logger.error("PP Count: " + str(pp_count))
+
+        # for key, val in request.POST.items():
+        #     desired_state[key] = val
+        #
+        # device.update_desired_state(desired_state)
+
+        return Response(
+            data=DeviceSerializer(device).data,
+            status=status.HTTP_200_OK,
+            content_type="application/json"
+        )
+
+
 class DeviceHistoryViewSet(viewsets.ModelViewSet):
 
     class LimitedLimitOffsetPagination(LimitOffsetPagination):
@@ -176,3 +222,40 @@ class LocationHistoryViewSet(viewsets.ModelViewSet):
     ordering_fields = ('__all__')
     ordering = ('-id',)
 
+
+
+class DeviceStateHistoryViewSet(viewsets.ModelViewSet):
+    serializer_class = DeviceHistorySerializer
+    # permission_classes = (IsAdminUser, IsAuthenticated)
+
+    def get_queryset(self):
+        """
+        Optionally restricts the returned purchases to a given user,
+        by filtering against a `username` query parameter in the URL.
+        """
+        queryset = DeviceHistory.objects.all()
+        query_filters = {}
+
+        # Device
+        device_uuid = self.request.query_params.get('device', None)
+        if device_uuid is not None:
+            query_filters['device__uuid'] = device_uuid
+            # queryset = queryset.filter(device__uuid=device_uuid)
+
+        # Last id
+        last_id = self.request.query_params.get('last_id', None)
+        if last_id is not None:
+            query_filters['pk__gt'] = last_id
+
+        if len(query_filters) > 0:
+            queryset = queryset.filter(**query_filters)
+
+        # Limit
+        limit = self.request.query_params.get('limit', None)
+
+        if limit:
+            queryset = queryset.order_by('-created')[:limit]
+        else:
+            queryset = queryset.order_by('created')
+
+        return queryset
