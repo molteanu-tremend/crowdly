@@ -17,14 +17,21 @@ from django.conf.urls import url, include
 from django.contrib import admin
 from rest_framework import routers
 from rest_framework.authtoken.views import ObtainAuthToken
+from django.conf.urls.static import static
+from django.conf import settings
 
-from api import DeviceViewSet, LocationViewSet
+
+
+from api import DeviceViewSet, LocationViewSet, ManageLocationViewSet, DeviceHistoryViewSet, LocationHistoryViewSet
 
 from views import HomeView
 
 router = routers.DefaultRouter()
 router.register(r'devices', DeviceViewSet, "Device")
 router.register(r'locations', LocationViewSet, "Location")
+router.register(r'manage', ManageLocationViewSet, base_name='manage')
+router.register(r'devicehistory', DeviceHistoryViewSet, 'DeviceHistory')
+router.register(r'locationhistory', LocationHistoryViewSet, 'LocationHistory')
 
 
 urlpatterns = [
@@ -43,3 +50,7 @@ urlpatterns = [
     url(r'^auth-token/', ObtainAuthToken.as_view()),
 
 ]
+
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+

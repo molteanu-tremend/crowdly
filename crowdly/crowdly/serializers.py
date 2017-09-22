@@ -4,7 +4,7 @@ from django.urls import reverse
 from django.utils.timesince import timesince
 from rest_framework import serializers
 
-from crowdly.models import Device, Location
+from crowdly.models import Device, Location, DeviceHistory
 
 
 class DeviceSerializer(serializers.ModelSerializer):
@@ -49,7 +49,7 @@ class LocationSerializer(serializers.ModelSerializer):
     owners = serializers.SlugRelatedField(
         many=True,
         read_only=True,
-        slug_field='uuid'
+        slug_field='id'
         )
 
     device_set = DeviceSerializer(many=True, read_only=True)
@@ -73,6 +73,95 @@ class LocationSerializer(serializers.ModelSerializer):
 
         read_only_fields = (
             'uuid',
+            'created',
+            'modified'
+        )
+
+
+class ManageLocationSerializer(serializers.ModelSerializer):
+
+    owners = serializers.SlugRelatedField(
+        many=True,
+        read_only=True,
+        slug_field='id'
+        )
+
+    device_set = DeviceSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Location
+        fields = (
+            'uuid',
+            'name',
+            'device_set',
+            'owners',
+            'created',
+            'modified'
+        )
+
+        read_only_fields = (
+            'uuid',
+            'created',
+            'modified'
+        )
+
+
+class DeviceHistorySerializer(serializers.ModelSerializer):
+    device_sn = serializers.CharField(read_only=True, source="device.serial_number")
+    device = serializers.SlugRelatedField(
+        many=False,
+        read_only=True,
+        slug_field='uuid'
+    )
+
+    class Meta:
+        model = DeviceHistory
+        fields = (
+            'id',
+            'device',
+            'device_sn',
+            'old_pp_count',
+            'new_pp_count',
+            'description',
+            'created',
+            'modified'
+        )
+
+        read_only_fields = (
+            'id',
+            'device',
+            'device_sn',
+            'old_pp_count',
+            'new_pp_count',
+            'description',
+            'created',
+            'modified'
+        )
+
+
+class LocationHistorySerializer(serializers.ModelSerializer):
+    location = serializers.SlugRelatedField(
+        many=False,
+        read_only=True,
+        slug_field='uuid'
+    )
+
+    class Meta:
+        model = DeviceHistory
+        fields = (
+            'id',
+            'location',
+            'pp_count',
+            'description',
+            'created',
+            'modified'
+        )
+
+        read_only_fields = (
+            'id',
+            'location',
+            'pp_count',
+            'description',
             'created',
             'modified'
         )

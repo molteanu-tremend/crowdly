@@ -29,6 +29,8 @@ class Location(ModelDiffMixin, models.Model):
 
     name = models.CharField(max_length=256, blank=True, null=True)  # devName
 
+    image = models.ImageField(null=True)
+
     owners = models.ManyToManyField(User, blank=True)
 
     latitude = models.FloatField(
@@ -178,17 +180,35 @@ class Device(ModelDiffMixin, models.Model):
 ########################################################################################
 
 
-class EventHistory(models.Model):
+class DeviceHistory(models.Model):
 
     device = models.ForeignKey(Device,blank=False,
                                       on_delete=models.CASCADE,
                                       verbose_name="Device")
 
-    # The user which triggered the Event (if any - for changes made from the UI)
-    user = models.ForeignKey(User, blank=True, null=True)
-
     old_pp_count = models.IntegerField()
     new_pp_count = models.IntegerField()
+
+    description = models.TextField(blank=True, default='')
+
+    # Admin
+    # -----
+    created = CreationDateTimeField(verbose_name="Created")
+    modified = ModificationDateTimeField()
+
+    def __unicode__(self):
+        return str(self.id)
+
+########################################################################################
+
+
+class LocationHistory(models.Model):
+
+    location = models.ForeignKey(Location, blank=False,
+                                      on_delete=models.CASCADE,
+                                      verbose_name="Location")
+
+    pp_count = models.IntegerField()
 
     description = models.TextField(blank=True, default='')
 

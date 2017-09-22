@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 
-from models import Device, EventHistory, Location
+from models import Device, DeviceHistory, Location
 
 
 @admin.register(Device)
@@ -37,7 +37,7 @@ class LocationAdmin(admin.ModelAdmin):
 
     fieldsets = (
         (None, {
-            'fields': ('uuid', 'name',
+            'fields': ('uuid', 'name', 'image',
                        'latitude',  'longitude'),
         }),
         # ('Owners', {'fields': ('owners',)}),
@@ -53,7 +53,7 @@ class LocationAdmin(admin.ModelAdmin):
     #     return ", ".join([u.username for u in obj.owners.all()])
 
 
-@admin.register(EventHistory)
+@admin.register(DeviceHistory)
 class EventAdmin(admin.ModelAdmin):
     list_display = ('id', 'device', 'created', 'modified', 'description')
     readonly_fields = ('id', 'created', 'modified', )
