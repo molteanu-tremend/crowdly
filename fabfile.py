@@ -39,4 +39,4 @@ def install_proj():
     update_db()
     create_cache()
     create_superuser()
-    
+

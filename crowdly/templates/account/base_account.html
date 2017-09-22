@@ -1,0 +1,198 @@
+{% load static from staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    {% block head %}
+      {% block meta %}
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <!-- Meta, title, CSS, favicons, etc. -->
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+      {% endblock meta %}
+
+      <title>Gentelella Alela! | {% block title %}{% endblock %}</title>
+
+      {% block stylesheets %}
+        <!-- Bootstrap -->
+        <link href="/static/vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+        <!-- Font Awesome -->
+        <link href="/static/vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+        <!-- NProgress -->
+        <link href="/static/vendors/nprogress/nprogress.css" rel="stylesheet">
+        <!-- bootstrap-daterangepicker -->
+        <link href="/static/vendors/bootstrap-daterangepicker/daterangepicker.css" rel="stylesheet">
+        <!-- iCheck -->
+        <link href="/static/vendors/iCheck/skins/flat/green.css" rel="stylesheet">
+        <!-- bootstrap-progressbar -->
+        <link href="/static/vendors/bootstrap-progressbar/css/bootstrap-progressbar-3.3.4.min.css" rel="stylesheet">
+        <!-- JQVMap -->
+        <link href="/static/vendors/jqvmap/dist/jqvmap.min.css" rel="stylesheet"/>
+      {% endblock stylesheets %}
+      <!-- Custom Theme Style -->
+      <link href="/static/build/css/custom.css" rel="stylesheet">
+    {% endblock head %}
+    {% block extra_head %}
+    {% endblock %}
+</head>
+
+<!-- Custom styling -->
+<style>
+    .page-signin-header {
+        box-shadow: 0 2px 2px rgba(0,0,0,.05), 0 1px 0 rgba(0,0,0,.05);
+    }
+
+    .page-signin-header .btn {
+        position: absolute;
+        top: 12px;
+        right: 15px;
+    }
+
+    html[dir="rtl"] .page-signin-header .btn {
+        right: auto;
+        left: 15px;
+    }
+
+    .page-signin-container {
+        width: auto;
+        margin: 30px 10px;
+    }
+
+    .page-signin-container p {
+        font-size: 16px;
+        text-align: center;
+        margin-bottom: 25px;
+    }
+
+    .page-signin-container form, .page-signin-container .content  {
+        border: 0;
+        box-shadow: 0 2px 2px rgba(0,0,0,.05), 0 1px 0 rgba(0,0,0,.05);
+        background-color: #fff;
+        padding: 30px;
+    }
+
+    .page-signin-container .passwordChange p {
+        text-align: left;
+    }
+
+    .passwordChange input[type='password'] {
+        display: block;
+        width: 100%;
+        height: 31px;
+        padding: 4px 12px;
+        font-size: 13px;
+        line-height: 1.61539;
+        color: #444;
+        background-color: #fff;
+        background-image: none;
+        border: 1px solid #d6d6d6;
+        border-radius: 2px;
+        transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+    }
+
+    .passwordChange form {
+        box-shadow: none;
+        padding: 0;
+    }
+
+    .passwordChange form p {
+        margin-bottom: 25px;
+    }
+
+    .page-signin-container h2, .color-white {
+        color: #fff;
+    }
+
+    .page-signin-container p {
+        margin-bottom: 0;
+    }
+
+    .color-white {
+        text-shadow: 3px 0px 0px #333;
+    }
+
+    .page-signin-container h2 {
+        font-size: 26px!important;
+    }
+
+    .page-signin-container .content h2 {
+        color: #444;
+        text-shadow: none;
+        margin: 0!important;
+        padding-bottom: 15px;
+        font-weight: 700!important;
+    }
+
+    .page-signin-container .content form {
+        box-shadow: none;
+        padding: 0;
+    }
+
+    @media (min-width: 544px) {
+        .page-signin-container {
+            width: 350px;
+            margin: 60px auto;
+        }
+    }
+
+    .page-signin-social-btn {
+        width: 40px;
+        padding: 0;
+        line-height: 40px;
+        text-align: center;
+        border: none !important;
+    }
+
+    #page-signin-forgot-form { display: none; }
+
+</style>
+
+<body>
+
+    <div class="page-signin-header p-a-2 text-sm-center bg-white">
+        <a class="px-demo-brand px-demo-brand-lg text-default" href="{% url 'home' %} "><span class="px-demo-logo bg-primary m-t-0"><span class="px-demo-logo-1"></span><span class="px-demo-logo-2"></span><span class="px-demo-logo-3"></span><span class="px-demo-logo-4"></span><span class="px-demo-logo-5"></span><span class="px-demo-logo-6"></span><span class="px-demo-logo-7"></span><span class="px-demo-logo-8"></span><span class="px-demo-logo-9"></span></span><strong>Crowdly</strong></a>
+        {% block header_button %}
+        {% endblock %}
+    </div>
+
+
+    {# main container #}
+    <div class="page-signin-container" id="page-signin-form">
+        <h2 class="m-t-0 m-b-4 text-xs-center font-weight-semibold font-size-20 color-white">
+            {% block page_title %}
+            {% endblock %}
+        </h2>
+
+        {% block page_subtitle %}
+        {% endblock %}
+
+        {% block container_content %}
+        {% endblock %}
+
+
+        {% block social_media %}
+            <h4 class="m-y-3 text-xs-center font-weight-semibold color-white">or sign in with</h4>
+            <div class="text-xs-center">
+                <a href="/accounts/facebook/login/?process=login" class="page-signin-social-btn btn btn-success btn-rounded" data-toggle="tooltip" title="Facebook"><i class="fa fa-facebook"></i></a>&nbsp;&nbsp;&nbsp;
+                <a href="/accounts/twitter/login/?process=login" class="page-signin-social-btn btn btn-info btn-rounded" data-toggle="tooltip" title="Twitter"><i class="fa fa-twitter"></i></a>&nbsp;&nbsp;&nbsp;
+                <a href="/accounts/google/login/?process=login" class="page-signin-social-btn btn btn-danger btn-rounded" data-toggle="tooltip" title="Google+"><i class="fa fa-google-plus"></i></a>
+            </div>
+        {% endblock %}
+
+    </div>
+    {# /main container #}
+
+    {% block extra_content %}
+
+    {% endblock %}
+
+
+    <div class="px-responsive-bg"><div class="px-responsive-bg-overlay" style="background: rgb(0, 0, 0); opacity: 0.2;"></div>
+        <img alt="" src="{% static 'assets/cloudmatix/iStock-502487342.jpg' %}" style="width: 100%; height: 932px; top: -177px; left: 0px;">
+    </div>
+
+    {% block scripts %}
+    {%  endblock %}
+
+</body>
+</html>

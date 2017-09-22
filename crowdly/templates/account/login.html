@@ -1,0 +1,123 @@
+{% extends "account/base_account.html" %}
+{% load widget_tweaks %}
+
+
+{% block header_button %}
+    <a href="/accounts/signup" class="btn btn-primary">Sign Up</a>
+{% endblock %}
+
+
+{% block page_title %}
+    Sign In to your Account
+{% endblock %}
+
+
+{% block container_content %}
+
+    <!-- / Sign In form -->
+    <form method="post" action="/accounts/login/" class="panel p-a-4">
+        {% csrf_token %}
+
+        <fieldset class="form-group form-group-lg {% if form.login.errors %}has-error{% endif %}">
+          {{ form.login.label_tag }}
+            {{ form.login | add_class:"form-control" }}
+          {% if form.login.errors %}
+            <span class="help-block">
+              {% for error in form.login.errors %}
+               {{ error }}
+               {% if not forloop.last %}<br>{% endif %}
+              {% endfor %}
+            </span>
+          {% endif %}
+        </fieldset>
+
+        <fieldset class="form-group form-group-lg {% if form.password.errors %}has-error{% endif %}">
+          {{ form.password.label_tag }}
+          {{ form.password | add_class:"form-control" }}
+          {% if form.password.errors %}
+            <span class="help-block">
+              {% for error in form.password.errors %}
+               {{ error }}
+               {% if not forloop.last %}<br>{% endif %}
+              {% endfor %}
+            </span>
+          {% endif %}
+        </fieldset>
+
+        <div class="clearfix">
+            <label class="custom-control custom-checkbox pull-xs-left">
+                <input type="checkbox" class="custom-control-input" id="id_remember" name="remember">
+                <span class="custom-control-indicator"></span>
+                Remember me
+            </label>
+            <a href="{% url 'account_reset_password' %}" class="font-size-12 text-default  pull-xs-right">Forgot your password?</a>
+        </div>
+
+        {% if form.non_field_errors %}
+          <div class="alert alert-warning alert-danger" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            {% for error in form.non_field_errors %}
+              {{ error }}
+              <br>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        {% if redirect_field_value != None %}
+          <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+        {% endif %}
+
+        <button type="submit" class="btn btn-block btn-lg btn-primary m-t-3">Sign In</button>
+    </form>
+    <!-- / Sign In form -->
+
+{% endblock %}
+
+{% block extra_content %}
+    <!-- Reset form -->
+
+    <div class="page-signin-container" id="page-signin-forgot-form">
+        <h2 class="m-t-0 m-b-4 text-xs-center font-weight-semibold font-size-20">Password reset</h2>
+
+        <form method="post"  action="/accounts/password/reset/" class="panel p-a-4">
+            {% csrf_token %}
+            <fieldset class="form-group form-group-lg">
+                <input type="email" name="email" id="id_email" class="form-control" placeholder="Your Email">
+            </fieldset>
+
+            <button type="submit" class="btn btn-block btn-lg btn-primary m-t-3">Send password reset link</button>
+            <div class="m-t-2">
+                <a href="#" class="text-default" id="page-signin-forgot-back">&larr; Back</a>
+            </div>
+        </form>
+    </div>
+    <!-- / Reset form -->
+{% endblock %}
+
+<!-- Javascript -->
+{% block scripts %}
+    <script>
+        var pxInit = [];
+
+        <!-- Initialize demo sidebar on page load -->
+        // pxDemo.initializeDemoSidebar();
+        pxInit.push(function() {
+            $(function() {
+                $('#px-demo-sidebar').pxSidebar();
+            });
+        });
+
+        pxInit.unshift(function() {
+            $(function() {
+                // pxDemo.initializeDemo();
+            });
+        });
+
+        for (var i = 0, len = pxInit.length; i < len; i++) {
+            pxInit[i].call(null);
+        }
+
+    </script>
+{% endblock %}
+
+<!-- / Javascript -->

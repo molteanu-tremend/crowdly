@@ -1,0 +1,21 @@
+{% extends "account/base_account.html" %}
+
+{% load i18n %}
+
+{% block page_title %}
+    {% trans "Verify Your E-mail Address" %}
+{% endblock %}
+
+
+{% block container_content %}
+<div class="content">
+
+    <p>{% blocktrans %}We have sent an e-mail to you for verification. Follow the link provided to finalize the signup process.
+        Please contact us if you do not receive it within a few minutes.{% endblocktrans %}
+    </p>
+</div>
+{% endblock %}
+
+
+{% block social_media %}
+{% endblock %}

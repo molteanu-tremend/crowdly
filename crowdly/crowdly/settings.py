@@ -49,6 +49,8 @@ INSTALLED_APPS = [
 
     'django_extensions',
 
+    'widget_tweaks'
+
 
 ]
 
