@@ -13,7 +13,7 @@ def create_db(db='crowdly'):
 
 
 def run():
-    local("python crowdly/manage.py runserver 0.0.0.0:8080 --settings=crowdly.settings")
+    local("python crowdly/manage.py runserver 0.0.0.0:7878 --settings=crowdly.settings")
 
 
 def makemigrations():

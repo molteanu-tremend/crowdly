@@ -25,7 +25,7 @@ SECRET_KEY = 'qlqmed^s)d4-ed@b)jmez22f^&!wa$x&k4!=@l&93%h4q%+n0#'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -49,7 +49,10 @@ INSTALLED_APPS = [
 
     'django_extensions',
 
-    'widget_tweaks'
+    'widget_tweaks',
+
+    'rest_framework',
+    'rest_framework.authtoken',
 
 
 ]
