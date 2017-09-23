@@ -29,11 +29,11 @@ class DeviceAdmin(admin.ModelAdmin):
 class LocationAdmin(admin.ModelAdmin):
     # ...
     list_display = \
-    ('uuid', 'name', 'get_owners', # 'get_last_people_count',
+    ('uuid', 'name', #'get_owners', # 'get_last_people_count',
     'created', 'modified')
     readonly_fields = ('uuid', 'created', 'modified')
     search_fields = ['uuid', 'name']
-    filter_horizontal = ('owners',)
+    # filter_horizontal = ('owners',)
 
     fieldsets = (
         (None, {
@@ -46,8 +46,8 @@ class LocationAdmin(admin.ModelAdmin):
         })
     )
 
-    def get_owners(self, obj):
-        return ", ".join([u.username for u in obj.owners.all()])
+    # def get_owners(self, obj):
+    #     return ", ".join([u.username for u in obj.owners.all()])
 
     # def get_owners(self, obj):
     #     return ", ".join([u.username for u in obj.owners.all()])

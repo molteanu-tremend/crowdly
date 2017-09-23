@@ -1,7 +1,9 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.models import User
 from django.views.generic import TemplateView
 from django.views.generic import View, ListView, DetailView, DeleteView, CreateView, TemplateView, UpdateView, DayArchiveView, MonthArchiveView, YearArchiveView
-from models import Device
+from models import Device, DeviceHistory, Location
+
 
 class HomeView(LoginRequiredMixin, TemplateView):
 
@@ -16,6 +18,13 @@ class HomeView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
 
         context = super(HomeView, self).get_context_data(**kwargs)
+
+        context['total_users'] = User.objects.count()
+        context['total_device_events'] = DeviceHistory.objects.count()
+        context['total_devices'] = Device.objects.count()
+        context['total_locations'] = Location.objects.count()
+
+
 
         return context
 

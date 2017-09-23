@@ -3,6 +3,7 @@ import datetime
 import pytz
 from django.db.models import Count
 from django.http import Http404
+from push_notifications.models import GCMDevice
 from rest_framework import viewsets, mixins, status
 from rest_framework.decorators import list_route, detail_route
 from rest_framework.exceptions import PermissionDenied
@@ -11,7 +12,7 @@ from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from crowdly.models import Device, Location, DeviceHistory, LocationHistory
+from crowdly.models import Device, Location, DeviceHistory, LocationHistory, LocationOwner
 from crowdly.serializers import DeviceSerializer, LocationSerializer, ManageLocationSerializer, \
     DeviceHistorySerializer, LocationHistorySerializer
 
@@ -127,9 +128,30 @@ class ManageLocationViewSet(mixins.ListModelMixin,
             location = self._get_location_from_request(request)
             if self.request.user not in location.owners.all():
 
-                location.owners.add(self.request.user)
-                location.save()
-                location.add_owner_event(request.user, "Location acquired")
+                locOwn = LocationOwner()
+                locOwn.location = location
+                locOwn.user = self.request.user
+
+                # locOwn.operation = request.POST['operation']
+                locOwn.operation = request.data.get('operation')
+                # locOwn.mobile_uuid = request.POST['mobile_uuid']
+                locOwn.mobile_uuid = request.data.get('mobile_uuid')
+                # locOwn.threshold = int(request.POST['threshold'])
+                locOwn.threshold = int(request.data.get('threshold'))
+                locOwn.save()
+
+                logger.error(str(request.data))
+
+                # Create a FCM device
+                # See if exists
+                if not GCMDevice.objects.filter(registration_id=request.data.get('mobile_uuid')).exists():
+                    fcm_device = GCMDevice.objects.create(registration_id=request.data.get('mobile_uuid'), cloud_message_type="FCM", user=self.request.user)
+
+                # location.owners.add(self.request.user)
+                # location.save()
+                # location.add_owner_event(request.user, "Location acquired")
+
+                logger.error("WEEEEEEEEEEEEEEEEEEEEEee")
 
                 return Response(
                     data=LocationSerializer(location).data,
@@ -138,6 +160,9 @@ class ManageLocationViewSet(mixins.ListModelMixin,
                 )
 
             else:
+
+                logger.error("HAAAAAAAAAAAAAAAAAAAA")
+
                 return Response(
                     data=ManageLocationSerializer(location).data,
                     status=status.HTTP_200_OK,
@@ -221,7 +246,6 @@ class LocationHistoryViewSet(viewsets.ModelViewSet):
     search_fields = ('device__uuid', 'device__serial_number')
     ordering_fields = ('__all__')
     ordering = ('-id',)
-
 
 
 class DeviceStateHistoryViewSet(viewsets.ModelViewSet):

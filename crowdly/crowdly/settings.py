@@ -54,8 +54,22 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
 
+    'push_notifications',
+
 
 ]
+
+PUSH_NOTIFICATIONS_SETTINGS = {
+        # "FCM_API_KEY": "AAAAsyIY2rM:APA91bH2LC1L5DLXKsUEleRkxM13bVv7FFf5gpbhhzLQG7aVhzNN1hlNbl-i2W7J29ng7gbGBlifg54kbXXwcn6DMZRuX5a-EEFYEUK-xSLLo74SkpraN0IxeNzaojpVANpbZF2nYm2l",
+        "FCM_API_KEY": "AIzaSyD_9F3_9ljlJEEQ-9dYDjrsceA_9VBYx-g",
+        "FCM_ERROR_TIMEOUT": 5,
+        "GCM_API_KEY": "[your api key]",
+        "APNS_CERTIFICATE": "/path/to/your/certificate.pem",
+        "APNS_TOPIC": "com.example.push_test",
+        "WNS_PACKAGE_SECURITY_ID": "[your package security id, e.g: 'ms-app://e-3-4-6234...']",
+        "WNS_SECRET_KEY": "[your app secret key, e.g.: 'KDiejnLKDUWodsjmewuSZkk']",
+}
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

@@ -1,7 +1,10 @@
 import traceback
+from datetime import timedelta
 
 import shortuuid
 from django.contrib.auth.models import User
+from django.utils.timezone import now
+from push_notifications.models import GCMDevice
 
 from crowdly.helpers import ModelDiffMixin
 from django.db import models
@@ -31,8 +34,8 @@ class Location(ModelDiffMixin, models.Model):
 
     image = models.ImageField(null=True)
 
-    owners = models.ManyToManyField(User, blank=True)
-
+    owners = models.ManyToManyField(User, blank=True, through='LocationOwner')
+    #
     latitude = models.FloatField(
         blank=True, null=True,
         validators=[MinValueValidator(-90), MaxValueValidator(90)])
@@ -46,6 +49,21 @@ class Location(ModelDiffMixin, models.Model):
 
     def __unicode__(self):
         return self.name
+
+
+class LocationOwner(models.Model):
+    location = models.ForeignKey(Location, null=False)
+    user = models.ForeignKey(User, null=False)
+
+    operation = models.CharField(default='gt', max_length=2)
+    threshold = models.IntegerField(default=0)
+
+    mobile_uuid = models.CharField(max_length=256, null=True)
+
+    created = CreationDateTimeField(verbose_name="Created")
+    modified = ModificationDateTimeField()
+
+    last_sent = models.DateTimeField(null=True)
 
 
 class Device(ModelDiffMixin, models.Model):
@@ -130,7 +148,6 @@ class Device(ModelDiffMixin, models.Model):
 
         if self.location:
             locHist = LocationHistory()
-
             sumc = 0
             for dev in self.location.device_set.all():
                 if dev.uuid != self.uuid:
@@ -141,10 +158,40 @@ class Device(ModelDiffMixin, models.Model):
             locHist.pp_count = sumc
             locHist.save()
 
+            # Send Notifications to Owners
+            for locOwn in self.location.locationowner_set.all():
+                logger.error("WEEEEE ")
+                logger.error(str(locOwn))
+
+                if not locOwn.last_sent or (locOwn.last_sent < now() - timedelta(seconds=30)):
+                    # TODO: Send push notification
+                    try:
+                        fcm_device = GCMDevice.objects.get(registration_id=locOwn.mobile_uuid)
+
+                        message = self.location.name + " people count has "
+                        if locOwn.operation == "lt":
+                            message += "dropped below "
+                            if sumc > locOwn.threshold:
+                                logger.error("RET " + str(sumc) + " larger than " + str(locOwn.threshold))
+                                return
+                        else:
+                            message += "exceeded "
+                            if sumc < locOwn.threshold:
+                                logger.error("RET " + str(sumc) + " lower than " + str(locOwn.threshold))
+                                return
+                        message += str(locOwn.threshold)
+                        fcm_device.send_message(message)
+                        logger.error("SENT PUSH " + message + " TO " + locOwn.mobile_uuid)
+                        # TODO: Save last_sent
+                        # locOwn.last_sent
+
+                    except Exception as e:
+                        logger.error("EROAAAREEEE")
+                        logger.error(str(e))
+
 
     def __unicode__(self):
         return str(self.name)
-
 
 
     def _send_save_notifications(self, dirty_fields):
