@@ -1,0 +1,115 @@
+{% extends "crowdly/base_site.html" %}
+{% load static from staticfiles %}
+
+{% block title %}Devices{% endblock %}
+
+{% block pageheader %}
+  <div class="row">
+    <div class="col-md-4 text-xs-center text-md-left text-nowrap">
+      <h1><i class="page-header-icon ion-ios-pulse-strong"></i>Locations</h1>
+    </div>
+  </div>
+{% endblock %}
+
+
+{% block content %}
+
+<!--  CREATE DEVICE MODAL -->
+
+<form action="action/" method="post" id="main_form" enctype="multipart/form-data">{% csrf_token %}
+
+<!-- Javascript -->
+<script>
+//    pxInit.push(function () {
+//        $('#jq-datatables-example').dataTable({
+//            "order": [[ 1, "asc" ]],
+//            "columnDefs": [ { "orderable": false, "targets": 0 }]
+//        });
+//        $('#jq-datatables-example_wrapper .table-caption').text('Devices');
+//        $('#jq-datatables-example_wrapper .dataTables_filter input').attr('placeholder', 'Search...');
+//
+//        $('#select_all').click(function(event) {
+//            if(this.checked) {
+//              // Iterate each checkbox
+//              $(':checkbox').each(function() {
+//                  if (!this.disabled) this.checked = true;
+//              });
+//            }
+//          else {
+//            $(':checkbox').each(function() {
+//                  this.checked = false;
+//              });
+//          }
+//        });
+//
+//    });
+</script>
+<!-- / Javascript -->
+<div class="right_col" role="main">
+
+    <div class="col-md-12 col-sm-12 col-xs-12">
+          <div class="x_panel">
+            <div class="x_title">
+              <h2>Devices</h2>
+              <div class="clearfix"></div>
+            </div>
+            <div class="x_content">
+
+              <table class="table table-bordered">
+                <thead>
+                  <th style="width: 10px">
+                        <input name="select_all" type="checkbox" id="select_all">
+                    </th>
+                    <th>Name</th>
+                    <th>UUID</th>
+                    <th>Latitude</th>
+                    <th>Longitude</th>
+                    <th>Actions</th>
+                </thead>
+                <tbody>
+
+                {% for device in location_list %}
+                <tr class="">
+                        <td>
+                           {% if 1 or has_rights %}
+                              <input name="check_{{ device.uuid }}" type="checkbox">
+                           {% else %}
+                              <input type="checkbox" disabled=True>
+                           {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'location-detail-view' device.uuid %}">
+                                {{ device.name }}
+                            </a>
+                        </td>
+                        <td>
+                            <a href="{% url 'location-detail-view' device.uuid %}">
+                                {{ device.uuid }}
+                            </a>
+                        </td>
+                        <td>
+                            {{ device.latitude }}
+                        </td>
+                        <td>
+                            {{ device.longitude }}
+                        </td>
+                        <td>
+                            <button class="btn btn-primary">
+                                <a style="color: #ffffff; text-decoration: none;" href="{% url 'location-detail-view' device.uuid %}">
+                                    Details
+                                </a>
+                            </button>
+                        </td>
+
+                    </tr>
+                {% endfor %}
+                </tbody>
+              </table>
+
+            </div>
+          </div>
+        </div>
+</div>
+</form>
+
+{% endblock %}

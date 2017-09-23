@@ -3,10 +3,24 @@
 
 {% block title %}My Devices{% endblock %}
 
-
 {% block content %}
 
     <div class="right_col" role="main">
+
+
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            <div class="x_panel">
+
+                <div class="x_title">
+                  <h2>People count history</h2>
+                  <div class="clearfix"></div>
+                </div>
+
+                 <div class="x_content2">
+                    <div id="graph_area_dev" style="width:100%; height:300px;"></div>
+                </div>
+            </div>
+        </div>
 
         <div class="col-md-6 col-sm-6 col-xs-12">
             <div class="x_panel">
@@ -23,7 +37,7 @@
                             Name
                         </div>
                         <div class="col-md-6">
-                            {{ device.name }}
+                            {{ location.name }}
                         </div>
                     </div>
 
@@ -32,25 +46,7 @@
                             UUID
                         </div>
                         <div class="col-md-6">
-                            {{ device.uuid }}
-                        </div>
-                    </div>
-
-                    <div style="margin-bottom: 20px; font-size: 1.5em;" class="col-md-12 col-sm-12 col-xs-12">
-                        <div class="col-md-6" style="font-weight: bold;">
-                            Location
-                        </div>
-                        <div class="col-md-6">
-                            {{ device.location }}
-                        </div>
-                    </div>
-
-                    <div style="margin-bottom: 20px; font-size: 1.5em;" class="col-md-12 col-sm-12 col-xs-12">
-                        <div class="col-md-6" style="font-weight: bold;">
-                            Last Seen
-                        </div>
-                        <div class="col-md-6">
-                            {{ device.last_seen | timesince }} ago
+                            {{ location.uuid }}
                         </div>
                     </div>
 
@@ -63,21 +59,50 @@
             <div class="x_panel">
 
                 <div class="x_title">
-                  <h2>People count history</h2>
+                  <h2>Trend</h2>
                   <div class="clearfix"></div>
                 </div>
 
-                 <div class="x_content2">
-                    <div id="graph_area_dev" style="width:100%; height:300px;"></div>
+                <div class="x_content" style="text-align: center">
+
+                    <div id="growing" style="font-size: 2em; display: none">
+                        <i class="green">
+                            <i class="fa fa-sort-asc"></i>
+                            <span>Increasing</span>
+                        </i>
+                    </div>
+
+                    <div id="decreasing" style="font-size: 2em; display: none">
+                        <i class="red">
+                            <i class="fa fa-sort-desc"></i>
+                            <span>Decreasing</span>
+                        </i>
+                    </div>
+
                 </div>
             </div>
         </div>
 
 
+        {% if location.latitude %}
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            <div class="x_panel">
+                <div class="x_title">
+                  <h2>Map positioning</h2>
+                  <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                    <div class="widget-maps" id="widget-maps-example" style="height:300px"></div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+
     </div>
 
 
-    {% if device.latitude %}
+    {% if location.latitude %}
     <div class="row">
         <div class="col-md-12">
             <div class="panel">
@@ -102,9 +127,9 @@
             <!--console.log("Start polling");-->
 
             <!--setInterval(function () {-->
-                <!--var product_name = '{{ device.product.name }}';-->
+                <!--var product_name = '{{ location.product.name }}';-->
 
-                <!--jQuery.get('/iot-device-state-data-json/{{ device.uuid }}/', function (data) {-->
+                <!--jQuery.get('/iot-device-state-data-json/{{ location.uuid }}/', function (data) {-->
                     <!--setData(data.state_data, data.is_online);-->
                 <!--});-->
             <!--}, 1000);-->
@@ -221,7 +246,7 @@
     <!--var limit = 50;-->
 
     <!--function getEventHistory(tempChart, lightChart, limit) {-->
-        <!--jQuery.get('/api/v1/statehistory/?device={{ device.uuid }}&limit=' + limit, function (data) {-->
+        <!--jQuery.get('/api/v1/statehistory/?device={{ location.uuid }}&limit=' + limit, function (data) {-->
             <!--// TODO: Update lastId-->
             <!--var tempChartData = [];-->
             <!--var lightChartData = [];-->
@@ -263,7 +288,7 @@
                <!--led = "on";-->
            <!--}-->
 
-           <!--jQuery.post('/api/v1/manage/{{ device.uuid }}/setstateattr/', {-->
+           <!--jQuery.post('/api/v1/manage/{{ location.uuid }}/setstateattr/', {-->
                <!--"led": led-->
            <!--}, function(data) {-->
 <!--{#               console.log(data);#}-->
@@ -311,7 +336,7 @@
 <!--{#        console.log("pxinit");#}-->
         <!--// Google Maps docs - https://developers.google.com/maps/documentation/javascript/examples/map-simple-->
         <!--var map = new google.maps.Map(document.getElementById('widget-maps-example'), {-->
-            <!--center: new google.maps.LatLng({{ device.latitude|default_if_none:0.0 }}, {{ device.longitude|default_if_none:0.0 }}),-->
+            <!--center: new google.maps.LatLng({{ location.latitude|default_if_none:0.0 }}, {{ location.longitude|default_if_none:0.0 }}),-->
             <!--mapTypeId: google.maps.MapTypeId.ROADMAP,-->
             <!--scrollwheel: false,-->
             <!--panControl: false,-->
@@ -337,15 +362,15 @@
                                         <!--new google.maps.Point(10, 34));-->
 
         <!--var marker = new google.maps.Marker({-->
-            <!--position: new google.maps.LatLng({{ device.latitude |default_if_none:30.0 }}, {{ device.longitude |default_if_none:0.0 }}),-->
+            <!--position: new google.maps.LatLng({{ location.latitude |default_if_none:30.0 }}, {{ location.longitude |default_if_none:0.0 }}),-->
             <!--draggable:false,-->
-            <!--title: "{{ device.uuid }}",-->
+            <!--title: "{{ location.uuid }}",-->
             <!--icon: pinImage,-->
             <!--map: map-->
         <!--});-->
 
         <!--var infowindow = new google.maps.InfoWindow({-->
-                <!--content: "{{ device.name }}"-->
+                <!--content: "{{ location.name }}"-->
 
         <!--});-->
 
@@ -367,6 +392,8 @@
 
 <script>
     $(document).ready(function() {
+        $('#decreasing').hide();
+        $('#growing').hide();
        console.log("READY");
 
        var data = [];
@@ -400,22 +427,44 @@
         var limit = 50;
 
     function getEventHistory(lightChart, limit) {
-        jQuery.get('/api/statehistory/?device={{ device.uuid }}&limit=' + limit, function (data) {
+        jQuery.get('/api/locstatehistory/?location={{ location.uuid }}&limit=' + limit, function (data) {
             // TODO: Update lastId
             var tempChartData = [];
             var lightChartData = [];
             for (var i=0; i < data['results'].length; i++) {
-                console.log(data['results']);
+
                 var item = data['results'][i];
 
-                if (item.hasOwnProperty('new_pp_count')) {
+                if (item.hasOwnProperty('pp_count')) {
                     var chartItemLight = {
                         "created": item['created'],
-                        "ppc": item['new_pp_count']
+                        "ppc": item['pp_count']
                     };
                     lightChartData.push(chartItemLight);
                 }
             }
+
+
+            if (data['results'].length > 6 ) {
+                var sumNow = data['results'][0]['pp_count'] +
+                        data['results'][1]['pp_count'] +
+                        data['results'][2]['pp_count'];
+
+                var sumOld  = data['results'][3]['pp_count'] +
+                        data['results'][4]['pp_count'] +
+                        data['results'][5]['pp_count'];
+
+                if (sumNow > sumOld) {
+                    // Growing
+                    $('#decreasing').hide();
+                    $('#growing').show();
+                } else {
+                    // Decreasing
+                    $('#growing').hide();
+                    $('#decreasing').show();
+                }
+            }
+
 
             lightChart.setData(lightChartData);
         });
@@ -444,6 +493,50 @@
          }
      }
     });
+
+
+    var map = new google.maps.Map(document.getElementById('widget-maps-example'), {
+            center: new google.maps.LatLng({{ location.latitude|default_if_none:0.0 }}, {{ location.longitude|default_if_none:0.0 }}),
+            mapTypeId: google.maps.MapTypeId.ROADMAP,
+            scrollwheel: false,
+            panControl: false,
+            zoomControl: true,
+            scaleControl: true,
+            draggable : false,
+            mapTypeControl: false,
+            zoom: 13,
+            zoomControlOptions: {
+                style: google.maps.ZoomControlStyle.SMALL,
+                position: google.maps.ControlPosition.RIGHT_TOP
+            }
+        });
+
+        var bounds = new google.maps.LatLngBounds();
+
+
+        var pinColor = "ffcc00" ;
+
+        var pinImage = new google.maps.MarkerImage("//chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|" + pinColor,
+                                        new google.maps.Size(21, 34),
+                                        new google.maps.Point(0,0),
+                                        new google.maps.Point(10, 34));
+
+        var marker = new google.maps.Marker({
+            position: new google.maps.LatLng({{ location.latitude |default_if_none:30.0 }}, {{ location.longitude |default_if_none:0.0 }}),
+            draggable:false,
+            title: "{{ location.uuid }}",
+            icon: pinImage,
+            map: map
+        });
+
+        var infowindow = new google.maps.InfoWindow({
+                content: "{{ location.name }}"
+
+        });
+
+        google.maps.event.addListener(marker, 'click', function() {
+                infowindow.open(map,marker);
+        });
 
 
     });

@@ -4,7 +4,7 @@ from django.urls import reverse
 from django.utils.timesince import timesince
 from rest_framework import serializers
 
-from crowdly.models import Device, Location, DeviceHistory
+from crowdly.models import Device, Location, DeviceHistory, LocationHistory
 
 
 class DeviceSerializer(serializers.ModelSerializer):
@@ -147,7 +147,7 @@ class LocationHistorySerializer(serializers.ModelSerializer):
     )
 
     class Meta:
-        model = DeviceHistory
+        model = LocationHistory
         fields = (
             'id',
             'location',

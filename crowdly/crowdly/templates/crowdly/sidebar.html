@@ -1,6 +1,6 @@
 <div class="left_col scroll-view">
   <div class="navbar nav_title" style="border: 0;">
-    <a href="index.html" class="site_title"><i class="fa fa-spinner"></i> <span>Crowdly</span></a>
+    <a href="" class="site_title"><i class="fa fa-spinner"></i> <span>Crowdly</span></a>
   </div>
 
   <div class="clearfix"></div>
@@ -32,6 +32,11 @@
         <li><a><i class="fa fa-cogs"></i> Devices <span class="fa fa-chevron-down"></span></a>
           <ul class="nav child_menu">
             <li><a href="{% url 'device-list-view' %}">List</a></li>
+          </ul>
+        </li>
+        <li><a><i class="fa fa-building"></i> Locations <span class="fa fa-chevron-down"></span></a>
+          <ul class="nav child_menu">
+            <li><a href="{% url 'location-list-view' %}">List</a></li>
           </ul>
         </li>
       </ul>

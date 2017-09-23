@@ -283,3 +283,40 @@ class DeviceStateHistoryViewSet(viewsets.ModelViewSet):
             queryset = queryset.order_by('created')
 
         return queryset
+
+
+class LocationStateHistoryViewSet(viewsets.ModelViewSet):
+    serializer_class = LocationHistorySerializer
+    # permission_classes = (IsAdminUser, IsAuthenticated)
+
+    def get_queryset(self):
+        """
+        Optionally restricts the returned purchases to a given user,
+        by filtering against a `username` query parameter in the URL.
+        """
+        queryset = LocationHistory.objects.all()
+        query_filters = {}
+
+        # Device
+        device_uuid = self.request.query_params.get('location', None)
+        if device_uuid is not None:
+            query_filters['location__uuid'] = device_uuid
+            # queryset = queryset.filter(device__uuid=device_uuid)
+
+        # Last id
+        last_id = self.request.query_params.get('last_id', None)
+        if last_id is not None:
+            query_filters['pk__gt'] = last_id
+
+        if len(query_filters) > 0:
+            queryset = queryset.filter(**query_filters)
+
+        # Limit
+        limit = self.request.query_params.get('limit', None)
+
+        if limit:
+            queryset = queryset.order_by('-created')[:limit]
+        else:
+            queryset = queryset.order_by('created')
+
+        return queryset

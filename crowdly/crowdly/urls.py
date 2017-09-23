@@ -21,9 +21,9 @@ from django.conf.urls.static import static
 from django.conf import settings
 
 from api import DeviceViewSet, LocationViewSet, ManageLocationViewSet, DeviceHistoryViewSet, LocationHistoryViewSet, \
-    ChangeDeviceViewSet, DeviceStateHistoryViewSet
+    ChangeDeviceViewSet, DeviceStateHistoryViewSet, LocationStateHistoryViewSet
 
-from views import HomeView, DeviceList, DeviceDetail
+from views import HomeView, DeviceList, DeviceDetail, LocationList, LocationDetail
 
 router = routers.DefaultRouter()
 router.register(r'devices', DeviceViewSet, "Device")
@@ -33,6 +33,7 @@ router.register(r'manage', ManageLocationViewSet, base_name='manage')
 router.register(r'devicehistory', DeviceHistoryViewSet, 'DeviceHistory')
 router.register(r'locationhistory', LocationHistoryViewSet, 'LocationHistory')
 router.register(r'statehistory', DeviceStateHistoryViewSet, base_name='statehistory')
+router.register(r'locstatehistory', LocationStateHistoryViewSet, base_name='locstatehistory')
 
 
 
@@ -53,6 +54,9 @@ urlpatterns = [
 
     url(r'^device/$', DeviceList.as_view(), name='device-list-view'),
     url(r'^device/(?P<slug>[\w-]+)/$', DeviceDetail.as_view(), name='device-detail-view'),
+
+    url(r'^location/$', LocationList.as_view(), name='location-list-view'),
+    url(r'^location/(?P<slug>[\w-]+)/$', LocationDetail.as_view(), name='location-detail-view'),
 
 ]
 
