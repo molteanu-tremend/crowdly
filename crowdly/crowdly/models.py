@@ -1,5 +1,5 @@
 import traceback
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 import shortuuid
 from django.contrib.auth.models import User
@@ -163,7 +163,7 @@ class Device(ModelDiffMixin, models.Model):
                 logger.error("WEEEEE ")
                 logger.error(str(locOwn))
 
-                if not locOwn.last_sent or (locOwn.last_sent < now() - timedelta(seconds=30)):
+                if not locOwn.last_sent or (locOwn.last_sent < now() - timedelta(seconds=15)):
                     # TODO: Send push notification
                     try:
                         fcm_device = GCMDevice.objects.get(registration_id=locOwn.mobile_uuid)
@@ -171,19 +171,25 @@ class Device(ModelDiffMixin, models.Model):
                         message = self.location.name + " people count has "
                         if locOwn.operation == "lt":
                             message += "dropped below "
-                            if sumc > locOwn.threshold:
+                            if sumc >= locOwn.threshold:
                                 logger.error("RET " + str(sumc) + " larger than " + str(locOwn.threshold))
                                 return
                         else:
                             message += "exceeded "
-                            if sumc < locOwn.threshold:
+                            if sumc <= locOwn.threshold:
                                 logger.error("RET " + str(sumc) + " lower than " + str(locOwn.threshold))
                                 return
-                        message += str(locOwn.threshold)
-                        fcm_device.send_message(message)
-                        logger.error("SENT PUSH " + message + " TO " + locOwn.mobile_uuid)
+                        message += str(locOwn.threshold) + "! Now: " + str(sumc) + "!"
+                        x = fcm_device.send_message(message)
+                        logger.error("SENT PUSH " + message + " TO " + locOwn.mobile_uuid + " | Result: " + str(x))
+                        logger.error("#################################################")
+                        logger.error("#################################################")
+                        logger.error("#################################################")
+                        logger.error("#################################################")
+                        logger.error("#################################################")
                         # TODO: Save last_sent
-                        # locOwn.last_sent
+                        locOwn.last_sent = datetime.now()
+                        locOwn.save()
 
                     except Exception as e:
                         logger.error("EROAAAREEEE")
