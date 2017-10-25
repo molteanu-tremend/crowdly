@@ -26,6 +26,7 @@ node {
     // In this stage, you should first activate the virtual environment and then run through a pip install of the requirements file.
     stage ("Install Application Dependencies") {
         sh '''
+            virtualenv --no-site-packages env
             source env/bin/activate
             pip install -r requirements.txt
             deactivate
