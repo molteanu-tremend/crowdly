@@ -37,7 +37,7 @@ node {
     // ready them for deployment.
     stage ("Collect Static files") {
         sh '''
-            source env/bin/activate
+            . env/bin/activate
             python crowdly/manage.py collectstatic --noinput
             deactivate
            '''
@@ -50,7 +50,7 @@ node {
         def testsError = null
         try {
             sh '''
-                source ../env/bin/activate
+                . ../env/bin/activate
                 python crowdly/manage.py test
                 deactivate
                '''
